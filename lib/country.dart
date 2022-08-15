@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'address.dart';
 import 'appbar.dart';
+import 'database/database_helper.dart';
+import 'database/sat.dart';
 
 class Country extends StatefulWidget {
   const Country({Key? key}) : super(key: key);
@@ -15,7 +17,7 @@ class _CountryState extends State<Country> {
   TextEditingController _country = TextEditingController();
   TextEditingController _state = TextEditingController();
   TextEditingController _city = TextEditingController();
-  TextEditingController pincode = TextEditingController();
+  TextEditingController _pincode = TextEditingController();
 
   List<Step> stepList() => [
         Step(
@@ -145,9 +147,9 @@ class _CountryState extends State<Country> {
                     height: 8,
                   ),
                   TextField(
-                    controller: pincode,
+                    controller: _pincode,
                     decoration: InputDecoration(
-                      hintText: 'Pincode',
+                      hintText: 'pincode',
                       prefixIcon: Icon(Icons.lock_open_rounded),
                       hintStyle: TextStyle(
                         fontWeight: FontWeight.w300,
@@ -222,7 +224,7 @@ class _CountryState extends State<Country> {
                   color: Colors.transparent,
                 ),
                 Text(
-                  'PinCode : ${pincode.text}',
+                  'Pincode : ${_pincode.text}',
                   style: TextStyle(
                     fontWeight: FontWeight.w300,
                   ),
@@ -232,6 +234,14 @@ class _CountryState extends State<Country> {
           ),
         )
       ];
+  @override
+  void dispose() {
+    super.dispose();
+    _country.dispose();
+    _state.dispose();
+    _city.dispose();
+    _pincode.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -265,10 +275,21 @@ class _CountryState extends State<Country> {
                         return AddScreen(
                           country: _country.text,
                           city: _city.text,
-                          pincode: pincode.text,
+                          pincode: _pincode.text,
                           state: _state.text,
                         );
                       });
+                      DatabaseHelper().insertTodo(Sat(
+                          country: _country.text,
+                          state: _state.text,
+                          city: _city.text,
+                          pincode: _pincode.text));
+                      // Navigator.pop(context, "Your todo has been saved.");
+                      print(_country.text);
+                      print(_state.text);
+                      print(_city.text);
+                      print(_pincode.text);
+
                       Navigator.of(context).push(route);
                     },
                     child: const Text(
